@@ -1,0 +1,95 @@
+#Find is the text conain any URL        
+def FindURL(string): 
+    # findall() has been used  
+    # with valid conditions for urls in string 
+    url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
+    return url 
+
+use it as below
+
+url=FindURL(text)            
+            if(len(url)>0):
+                text=text.replace(url[0],'')
+
+
+replace_list = {r"i'm": 'i am',
+                r"'re": ' are',
+                r"let's": 'let us',                
+                r"'ve": ' have',
+                r"can't": 'can not',
+                r"cannot": 'can not',
+                r"shan't": 'shall not',
+                r"n't": ' not',
+                r"'d": ' would',
+                r"'ll": ' will',
+                r"'scuse": 'excuse',                
+                '!': '.',                
+                '\s+': ' '}
+
+Ad above code before MLStripper and add more patterns to this code.
+
+
+From: vikram.bakre@ambrapalielectrotech.com <vikram.bakre@ambrapalielectrotech.com> 
+Sent: 10 December 2019 11:05
+To: 'arun.b@ambrapalielectrotech.com' <arun.b@ambrapalielectrotech.com>
+Subject: code sample 
+
+from html.parser import HTMLParser
+
+#Clean the text to remove html or javascript or any other tags.
+class MLStripper(HTMLParser):
+    def __init__(self):
+        # initialize the base class
+        HTMLParser.__init__(self)
+
+    def read(self, data):
+        # clear the current output before re-use
+        self._lines = []
+        # re-set the parser's state before re-use
+        self.reset()
+        self.feed(data)
+        return ''.join(self._lines)
+
+    def handle_data(self, d):
+        self._lines.append(d)
+def strip_tags(html):
+    s = MLStripper()
+    return s.read(html)
+
+
+You have to call strip_tags(Text ) and pass text to it, it will remove  html links from the text. Pass whole text then we have to split it by “.”
+
+
+#Filter the text with unwanted characters or tags and split with \n
+def clean_text(text):    
+    text=text.replace('"', '')
+    text=text.replace("<br>","\n")
+    text=re.sub('[^A-Za-z.,-]+\<>*', ' ', strip_tags(text)).strip()
+    text=text.split("-----Original Message-----")[0]         
+    for s in replace_list:        
+        text = text.replace(s, replace_list[s])    
+    
+    if(text.find(',')>-1):
+        i=text.index(",")
+        if(len(text[i])>i and text[i+1]=='\n'):
+            text.replace(",","")        
+    
+    text=text.replace("<div>","\\n").replace("</div>","").replace("&"," and ").replace("\r","").replace('\\u2019',' a').replace("\n\n","\n").replace("\n \n","\n").replace("\t","").replace("Thanks","thank you").replace("Thankx","thank you").replace("thanks","thank you").replace("-","").replace("\\n","\n").replace('!','').replace(':)','great').replace('(:','bad').split("\n")
+    text=[m.strip() for m in text]
+    i=-1    
+    while(i!=len(text)):
+        i+=1
+        if(i<len(text)-1 and len(text[i+1])>0 and text[i]!='' and text[i][-1] !='.'):
+            text[i]+=' '+text[i+1]        
+            del text[i+1]
+            i=i-1
+    text=[m.strip() for m in text if(len(m)>3)]
+    
+    for k in range(len(text)):
+        if(k<len(text)-1 and text[k+1][0].islower()):
+            text[k]+=' '+text[k+1]
+            del text[k+1]
+    
+    return text
+
+Clean text function will clear the text and remove the special characters and unwanted texts.

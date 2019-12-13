@@ -37,6 +37,7 @@ Subject: code sample
 from html.parser import HTMLParser
 
 #Clean the text to remove html or javascript or any other tags.
+https://github.com/CoreyMSchafer/code_snippets/tree/master/Python-Regular-Expressions
 class MLStripper(HTMLParser):
     def __init__(self):
         # initialize the base class

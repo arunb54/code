@@ -1,1 +1,47 @@
-jij
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from nltk.tokenize import sent_tokenize,word_tokenize
+from nltk.corpus import stopwords
+
+
+reviews_df=pd.read_csv(r'C:\Users\ARUN B\Reviews Final.csv',usecols=['Text','Score'])
+reviews_df.head(15)
+
+y=reviews_df['Score']
+reviews_df.drop(columns='Score',axis=1,inplace=True)
+X_train, X_test, y_train, y_test= train_test_split(reviews_df, y, test_size=0.2, random_state=42)
+
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+
+tokenizer=RegexpTokenizer(r'\w+')
+lemmatizer= WordNetLemmatizer()
+stemmer=PorterStemmer()
+
+def preprocessing(Text):
+    
+    final_tokens=' '
+    tokens=tokenizer.tokenize(Text)
+    pure_tokens=[token.lower() for token in tokens if token.lower() not in stopwords.words('english')]
+    lemmas_tokens=[lemmatizer.lemmatize(pure_token) for pure_token in pure_tokens]
+    
+    final_tokens=final_tokens.join(lemmas_tokens)
+    return final_tokens
+X_train['Cleaned_text']=X_train['Text'].apply(preprocessing)
+X_test['Cleaned_text']=X_test['Text'].apply(preprocessing)
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+vectorizer=TfidfVectorizer(stop_words='english',use_idf=True)
+X_train_TfIdf=vectorizer.fit_transform(X_train['Cleaned_text'])
+X_test_TfIdf=vectorizer.transform(X_test['Cleaned_text'])
+
+pd.DataFrame(X_train_TfIdf.toarray())
+
+
+from sklearn.neighbors import KNeighborsClassifier
+knn_classifier = KNeighborsClassifier()
+knn_classifier.fit(X_train_TfIdf.toarray(),y_train)
+knn_predictions = knn_classifier.predict(X_train_TfIdf.toarray())
+

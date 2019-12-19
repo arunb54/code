@@ -1,1 +1,25 @@
-https://medium.com/@b.terryjack/tips-and-tricks-for-multi-class-classification-c184ae1c8ffchttps://towardsdatascience.com/word-embeddings-exploration-explanation-and-exploitation-with-code-in-python-5dac99d5d795
+from gensim.models import word2vec
+corpus = [
+          'Text of the first document.',
+          'Text of the second document made longer.',
+          'Number three.',
+          'This is number four.',
+]
+# we need to pass splitted sentences to the model
+tokenized_sentences = [sentence.split() for sentence in corpus]
+model = word2vec.Word2Vec(tokenized_sentences, min_count=1)
+
+
+
+import itertools
+from gensim.models.word2vec import Text8Corpus
+from glove import Corpus, Glove
+# sentences and corpus from standard library
+sentences = list(itertools.islice(Text8Corpus('text8'),None))
+corpus = Corpus()
+# fitting the corpus with sentences and creating Glove object
+corpus.fit(sentences, window=10)
+glove = Glove(no_components=100, learning_rate=0.05)
+# fitting to the corpus and adding standard dictionary to the object
+glove.fit(corpus.matrix, epochs=30, no_threads=4, verbose=True)
+glove.add_dictionary(corpus.dictionary)

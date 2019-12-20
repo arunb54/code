@@ -1,2 +1,12 @@
-https://stackoverflow.com/questions/49643974/how-to-do-text-classification-using-word2vec
+import spacy
+
+nlpSpacy=spacy.load('en_core_web_lg')
+
+def getDependency(sent):    
+    doc = nlpSpacy(sent)
+    dep=[]
+    for token in doc:
+        dep.append([token.text, token.dep_, token.head.text, token.head.pos_,token.pos_,token.tag_,token.lemma_])
+    return dep
+
 
